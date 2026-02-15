@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-12 px-4">
+    <div class="text-center mb-16">
+        <span class="text-blue-600 font-black tracking-widest uppercase text-sm">Our Mission</span>
+        <h1 class="text-5xl font-black text-black mt-4 mb-6">Revolutionizing Real Estate in Kenya.</h1>
+        <p class="text-xl text-gray-600 leading-relaxed">
+            Makao was born from a simple idea: Finding a home shouldn't require a whole day of physical travel. We bring the property to you through immersive 3D technology.
+        </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-20">
+        <div class="space-y-4">
+            <div class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg">
+                <i class="fas fa-vr-cardboard text-xl"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-black">Immersive Tours</h3>
+            <p class="text-gray-600">Walk through your potential next home from your phone. Every corner, every detail, verified.</p>
+        </div>
+
+        <div class="space-y-4">
+            <div class="w-12 h-12 bg-black rounded-2xl flex items-center justify-center text-white shadow-lg">
+                <i class="fas fa-shield-alt text-xl"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-black">Secure Payments</h3>
+            <p class="text-gray-600">Integrated M-Pesa payments ensure that your deposits and rent are handled safely and instantly.</p>
+        </div>
+    </div>
+
+    <div class="bg-gray-900 rounded-3xl p-12 text-center text-white shadow-2xl">
+        <h2 class="text-3xl font-black mb-4">Ready to find your space?</h2>
+        <p class="text-gray-400 mb-8">Join thousands of Kenyans using Makao for a smarter way to move.</p>
+        <div class="flex flex-col md:flex-row justify-center gap-4">
+            <a href="{% url 'signup' %}" class="bg-blue-600 hover:bg-blue-700 px-8 py-4 rounded-2xl font-black transition">Create Account</a>
+            <a href="{% url 'property-list' %}" class="bg-white text-black hover:bg-gray-100 px-8 py-4 rounded-2xl font-black transition">Browse Listings</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

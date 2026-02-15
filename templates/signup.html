@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-10">
+    <div class="text-center mb-10">
+        <h1 class="text-4xl font-black text-black">Join Makao</h1>
+        <p class="text-gray-500 mt-2">Choose your account type to get started.</p>
+    </div>
+
+    <div id="error-popup" class="hidden max-w-lg mx-auto mb-6 bg-red-100 border-l-4 border-red-600 text-red-700 p-4 rounded-xl shadow-md transition-all">
+        <div class="flex items-center">
+            <i class="fas fa-exclamation-circle mr-3"></i>
+            <p id="error-message" class="font-bold text-sm"></p>
+        </div>
+    </div>
+
+    {% if messages %}
+        <div class="max-w-lg mx-auto mb-6">
+            {% for message in messages %}
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl relative">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="post" id="signup-form" class="space-y-8" onsubmit="return validateForm(event)">
+        {% csrf_token %}
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div id="tenant-card" onclick="selectRole('tenant')" 
+                 class="cursor-pointer border-2 border-gray-200 rounded-3xl p-8 bg-white hover:border-blue-600 transition-all text-center group">
+                <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-100 transition">
+                    <i class="fas fa-home text-2xl text-gray-400 group-hover:text-blue-600"></i>
+                </div>
+                <h3 class="text-xl font-bold text-black">I'm a Tenant</h3>
+                <p class="text-gray-500 text-sm mt-2">I want to explore 3D homes and rent properties.</p>
+            </div>
+
+            <div id="landlord-card" onclick="selectRole('landlord')" 
+                 class="cursor-pointer border-2 border-gray-200 rounded-3xl p-8 bg-white hover:border-blue-600 transition-all text-center group">
+                <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-100 transition">
+                    <i class="fas fa-key text-2xl text-gray-400 group-hover:text-blue-600"></i>
+                </div>
+                <h3 class="text-xl font-bold text-black">I'm a Landlord</h3>
+                <p class="text-gray-500 text-sm mt-2">I want to list my properties and manage tenants.</p>
+            </div>
+        </div>
+
+        <input type="hidden" name="is_landlord" id="id_is_landlord" value="False">
+        <input type="hidden" name="is_tenant" id="id_is_tenant" value="False">
+
+        <div class="bg-white p-8 rounded-3xl shadow-xl border border-gray-100 max-w-lg mx-auto">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-black uppercase tracking-widest text-gray-400 mb-1">Username</label>
+                    <input type="text" name="username" id="username" required placeholder="johndoe"
+                           class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 outline-none transition">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-black uppercase tracking-widest text-gray-400 mb-1">Email Address</label>
+                    <input type="email" name="email" id="email" required placeholder="john@example.com"
+                           class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 outline-none transition">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-black uppercase tracking-widest text-gray-400 mb-1">Phone Number</label>
+                    <input type="text" name="phone_number" id="phone" placeholder="0712345678"
+                           class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 outline-none transition">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-black uppercase tracking-widest text-gray-400 mb-1">Password</label>
+                    <input type="password" name="password" id="password" required placeholder="••••••••"
+                           class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 outline-none transition">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-black uppercase tracking-widest text-gray-400 mb-1">Confirm Password</label>
+                    <input type="password" name="confirm_password" id="confirm_password" required placeholder="••••••••"
+                           class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 outline-none transition">
+                </div>
+            </div>
+
+            <button type="submit" class="w-full bg-blue-600 hover:bg-black text-white py-4 rounded-2xl font-black mt-8 transition-all shadow-lg">
+                Create Account
+            </button>
+            
+            <p class="text-center text-sm text-gray-500 mt-4">
+                Already have an account? <a href="{% url 'login' %}" class="text-blue-600 font-bold hover:underline">Login</a>
+            </p>
+        </div>
+    </form>
+</div>
+
+<script>
+    function showError(msg) {
+        const popup = document.getElementById('error-popup');
+        const text = document.getElementById('error-message');
+        text.innerText = msg;
+        popup.classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function selectRole(role) {
+        document.getElementById('tenant-card').classList.remove('border-blue-600', 'ring-4', 'ring-blue-50');
+        document.getElementById('landlord-card').classList.remove('border-blue-600', 'ring-4', 'ring-blue-50');
+        
+        const isLandlordInput = document.getElementById('id_is_landlord');
+        const isTenantInput = document.getElementById('id_is_tenant');
+
+        if (role === 'tenant') {
+            document.getElementById('tenant-card').classList.add('border-blue-600', 'ring-4', 'ring-blue-50');
+            isTenantInput.value = 'True';
+            isLandlordInput.value = 'False';
+        } else {
+            document.getElementById('landlord-card').classList.add('border-blue-600', 'ring-4', 'ring-blue-50');
+            isLandlordInput.value = 'True';
+            isTenantInput.value = 'False';
+        }
+    }
+
+    function validateForm(event) {
+        const pass = document.getElementById('password').value;
+        const confirmPass = document.getElementById('confirm_password').value;
+        const isLandlord = document.getElementById('id_is_landlord').value;
+        const isTenant = document.getElementById('id_is_tenant').value;
+
+        // 1. Role Selection Check
+        if (isLandlord === 'False' && isTenant === 'False') {
+            event.preventDefault();
+            showError("Please select whether you are a Tenant or a Landlord.");
+            return false;
+        }
+
+        // 2. Match Check
+        if (pass !== confirmPass) {
+            event.preventDefault();
+            showError("Passwords do not match!");
+            return false;
+        }
+
+        // 3. Complexity Check (8 chars, Upper, Lower, Number, Special)
+        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        if (!regex.test(pass)) {
+            event.preventDefault();
+            showError("Password must be at least 8 characters long, include uppercase, lowercase, a number, and a special character.");
+            return false;
+        }
+
+        return true;
+    }
+</script>
+{% endblock %}

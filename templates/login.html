@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-md mx-auto py-16">
+    <div class="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+        <div class="bg-blue-600 p-8 text-white text-center">
+            <h1 class="text-3xl font-black">Welcome Back</h1>
+            <p class="text-blue-100 mt-2">Log in to manage your 3D properties.</p>
+        </div>
+
+        <form method="post" class="p-8 space-y-6">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="bg-red-50 text-red-600 p-4 rounded-xl text-sm font-bold">
+                    {{ form.non_field_errors.0 }}
+                </div>
+            {% endif %}
+
+            <div>
+                <label class="block text-xs font-black uppercase tracking-widest text-gray-400 mb-1">Username</label>
+                {{ form.username }}
+            </div>
+
+            <div>
+                <label class="block text-xs font-black uppercase tracking-widest text-gray-400 mb-1">Password</label>
+                {{ form.password }}
+            </div>
+
+            <button type="submit" class="w-full bg-blue-600 hover:bg-black text-white py-4 rounded-2xl font-black transition-all shadow-lg transform hover:-translate-y-1">
+                Sign In
+            </button>
+
+            <div class="text-center space-y-2 pt-4">
+                <p class="text-sm text-gray-500">
+                    Don't have an account? <a href="{% url 'signup' %}" class="text-blue-600 font-bold hover:underline">Sign Up</a>
+                </p>
+                <a href="#" class="text-xs text-gray-400 hover:text-blue-600 transition">Forgot your password?</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Styling the Django inputs to match your theme
+    document.querySelectorAll('input').forEach(el => {
+        el.className = "w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-50 outline-none transition";
+    });
+</script>
+{% endblock %}

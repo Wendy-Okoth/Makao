@@ -1,0 +1,77 @@
+{% extends "base_landlord.html" %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 pb-12">
+    <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+        <div>
+            <h1 class="text-3xl font-black text-black">Landlord Dashboard</h1>
+            <p class="text-gray-500">Manage your listings and track your earnings.</p>
+        </div>
+        <a href="{% url 'property-add' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold transition flex items-center justify-center shadow-lg">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            + Add New Property
+        </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+            <p class="text-gray-500 text-sm font-bold uppercase tracking-wider">Total Properties</p>
+            <p class="text-4xl font-black text-black">{{ my_properties.count }}</p>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+            <p class="text-gray-500 text-sm font-bold uppercase tracking-wider">Active Listings</p>
+            <p class="text-4xl font-black text-blue-600">
+                {{ my_properties.filter.is_available.count }}
+            </p>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+            <p class="text-gray-500 text-sm font-bold uppercase tracking-wider">Total Revenue</p>
+            <p class="text-4xl font-black text-green-600">KES 0.00</p>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="p-6 border-b border-gray-100">
+            <h2 class="text-xl font-bold text-black">Your Listings</h2>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-gray-50 text-gray-400 uppercase text-xs font-black tracking-widest">
+                        <th class="px-6 py-4">Property</th>
+                        <th class="px-6 py-4">Location</th>
+                        <th class="px-6 py-4">Price</th>
+                        <th class="px-6 py-4">Status</th>
+                        <th class="px-6 py-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    {% for property in my_properties %}
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="px-6 py-4 font-bold text-black">{{ property.title }}</td>
+                        <td class="px-6 py-4 text-gray-500">{{ property.location }}</td>
+                        <td class="px-6 py-4 font-semibold text-black">KES {{ property.price }}</td>
+                        <td class="px-6 py-4">
+                            {% if property.is_available %}
+                                <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold">Available</span>
+                            {% else %}
+                                <span class="bg-gray-200 text-gray-600 px-3 py-1 rounded-full text-xs font-bold">Occupied</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4">
+                            <a href="{% url 'property-detail' property.id %}" class="text-blue-600 hover:text-blue-800 font-bold text-sm">View Details</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="px-6 py-12 text-center text-gray-400 italic">
+                            You haven't added any properties yet.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "base_landlord.html" %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <a href="{% url 'property-list' %}" class="text-blue-600 hover:text-blue-800 font-semibold flex items-center mb-6">
+        ← Back to Listings
+    </a>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2">
+            <h1 class="text-4xl font-black text-gray-900 mb-2">{{ property.title }}</h1>
+            <p class="text-gray-600 flex items-center mb-6 text-lg">
+                <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                {{ property.location }}
+            </p>
+
+            <div class="relative bg-black rounded-3xl overflow-hidden shadow-2xl mb-8" style="padding-top: 56.25%;">
+                {% if property.virtual_tour_url %}
+                    <iframe 
+                        src="{{ property.virtual_tour_url }}" 
+                        class="absolute top-0 left-0 w-full h-full"
+                        frameborder="0" 
+                        allowfullscreen 
+                        allow="xr-spatial-tracking">
+                    </iframe>
+                {% else %}
+                    <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center text-white italic">
+                        No virtual tour available for this property.
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+                <h2 class="text-2xl font-bold mb-4">Description</h2>
+                <p class="text-gray-700 leading-relaxed text-lg">{{ property.description }}</p>
+            </div>
+        </div>
+
+        <div class="lg:col-span-1">
+            <div class="bg-white p-8 rounded-3xl shadow-xl border border-blue-50 sticky top-10">
+                <div class="mb-6">
+                    <span class="text-gray-500 block text-sm uppercase font-bold tracking-widest">Monthly Rent</span>
+                    <span class="text-4xl font-black text-blue-600">KES {{ property.price }}</span>
+                </div>
+
+                <div class="space-y-4">
+                    <button class="w-full bg-green-500 hover:bg-green-600 text-white py-4 rounded-2xl font-bold text-lg shadow-lg transition-all transform hover:-translate-y-1">
+                        Secure with M-Pesa
+                    </button>
+                    <p class="text-xs text-center text-gray-400">
+                        Payments are processed securely via Daraja API.
+                    </p>
+                </div>
+
+                <hr class="my-8 border-gray-100">
+
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 font-bold">
+                        {{ property.landlord.initials }}
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Listed by</p>
+                        <p class="font-bold text-gray-800">{{ property.landlord.get_full_name|default:property.landlord.username }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

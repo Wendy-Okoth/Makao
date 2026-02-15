@@ -16,15 +16,21 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-# Import your views directly
-from properties.views import PropertyListView, PropertyDetailView
+from properties.views import PropertyListView,PropertyCreateView, PropertyDetailView, LandlordDashboardView
+from accounts.views import signup_view
+from django.contrib.auth import views as auth_views
+from django.views.generic import TemplateView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    
-    # Homepage: Points directly to the view, no include needed!
+    path('', TemplateView.as_view(template_name='home.html'), name='home'),
     path('', PropertyListView.as_view(), name='property-list'),
-    
-    # Detail page
+    path('dashboard/', LandlordDashboardView.as_view(), name='landlord-dashboard'),
     path('property/<int:pk>/', PropertyDetailView.as_view(), name='property-detail'),
+    path('property/add/', PropertyCreateView.as_view(), name='property-add'),
+    path('signup/', signup_view, name='signup'),
+    path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(next_page='/'), name='logout'),
+    path('about/', TemplateView.as_view(template_name='about.html'), name='about'),
 ]
+  
