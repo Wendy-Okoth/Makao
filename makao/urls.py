@@ -16,7 +16,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+# Import your views directly
+from properties.views import PropertyListView, PropertyDetailView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    
+    # Homepage: Points directly to the view, no include needed!
+    path('', PropertyListView.as_view(), name='property-list'),
+    
+    # Detail page
+    path('property/<int:pk>/', PropertyDetailView.as_view(), name='property-detail'),
 ]
