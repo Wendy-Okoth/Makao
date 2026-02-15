@@ -1,2 +1,2 @@
-"# Makao" 
-"A Property Management System with M-Pesa integration." 
+# Makao 
+A Property Management System with M-Pesa integration.
