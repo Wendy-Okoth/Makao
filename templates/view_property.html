@@ -1,0 +1,45 @@
+{% extends "base_tenant.html" %}
+
+{% block content %}
+<div class="mb-10">
+    <h2 class="text-3xl font-black text-black italic tracking-tighter uppercase">Available Tours</h2>
+    <p class="text-gray-400 font-medium">Explore high-immersion listings ready for you.</p>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    {% for property in properties %}
+    <div class="group bg-white rounded-[2.5rem] overflow-hidden border border-gray-100 shadow-sm hover:shadow-2xl transition-all duration-500">
+        <div class="relative h-64 overflow-hidden">
+            <div class="w-full h-full bg-gray-900 flex items-center justify-center">
+                <i class="fas fa-home text-4xl text-gray-800"></i>
+            </div>
+            
+            {% if property.virtual_tour_url %}
+            <div class="absolute top-4 left-4 bg-blue-600 text-white text-[10px] font-black px-3 py-1.5 rounded-full flex items-center shadow-lg animate-pulse">
+                <i class="fas fa-vr-cardboard mr-2"></i> 3D TOUR
+            </div>
+            {% endif %}
+            
+            <div class="absolute bottom-4 right-4 bg-white/90 backdrop-blur text-black px-4 py-2 rounded-xl font-black text-sm">
+                KES {{ property.price }}
+            </div>
+        </div>
+
+        <div class="p-6">
+            <h3 class="text-xl font-black text-black group-hover:text-blue-600 transition">{{ property.title }}</h3>
+            <p class="text-gray-400 text-xs mb-6 flex items-center mt-1">
+                <i class="fas fa-map-marker-alt mr-2 text-blue-600"></i> {{ property.location }}
+            </p>
+            
+            <a href="{% url 'property-detail' property.id %}" class="block w-full text-center bg-gray-900 text-white py-4 rounded-2xl font-black hover:bg-blue-600 transition shadow-lg">
+                Enter Tour
+            </a>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-span-full py-20 text-center bg-white rounded-[3rem] border-2 border-dashed border-gray-100">
+        <p class="text-gray-400 font-bold italic">No 3D listings available right now. Check back soon!</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

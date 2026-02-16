@@ -22,7 +22,9 @@ from properties.views import (
     PropertyListView, 
     PropertyCreateView, 
     PropertyDetailView, 
-    LandlordDashboardView
+    LandlordDashboardView,
+    TenantDashboardView,
+    TenantExploreView
 )
 from accounts.views import signup_view, login_success_redirect
 
@@ -38,5 +40,7 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(next_page='/'), name='logout'),
     path('login-success/', login_success_redirect, name='login-success'),
     path('about/', TemplateView.as_view(template_name='about.html'), name='about'),
+    path('tenant/dashboard/', TenantDashboardView.as_view(), name='tenant-dashboard'),
+    path('tenant/explore/', TenantExploreView.as_view(), name='tenant-explore'),
 ]
   

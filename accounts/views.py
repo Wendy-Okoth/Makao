@@ -63,13 +63,22 @@ def signup_view(request):
             
     return render(request, 'signup.html')
 
-
 @login_required
 def login_success_redirect(request):
     """
-    Redirects users based on their role after login.
+    Explicitly redirects users based on their specific role.
+    Falls back to 'home' if the user role is undefined or an error occurs.
     """
-    if request.user.is_landlord:
+    user = request.user
+
+    # 1. Check if the user is a Landlord
+    if hasattr(user, 'is_landlord') and user.is_landlord:
         return redirect('landlord-dashboard')
-    else:
-        return redirect('property-list')
+
+    # 2. Check if the user is a Tenant
+    # (Assuming tenants have is_landlord=False or you have an is_tenant field)
+    elif hasattr(user, 'is_landlord') and not user.is_landlord:
+        return redirect('tenant-dashboard')
+
+    # 3. Safety Fallback: If role is ambiguous, send to the home page
+    return redirect('home')

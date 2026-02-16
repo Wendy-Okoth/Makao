@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Makao | Discover Your Home</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; }
+        .glass-nav { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); }
+    </style>
+</head>
+<body class="flex min-h-screen">
+
+    <aside class="w-64 bg-white border-r border-gray-100 flex flex-col fixed h-full z-50">
+        <div class="p-8">
+            <h1 class="text-2xl font-black text-blue-600 tracking-tighter italic">MAKAO.</h1>
+            <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Tenant Portal</p>
+        </div>
+
+        <nav class="flex-grow px-4 space-y-2">
+            <a href="{% url 'tenant-dashboard' %}" class="flex items-center space-x-3 p-4 rounded-2xl bg-blue-50 text-blue-600 font-bold transition">
+                <i class="fas fa-compass"></i>
+                <span>Explore 3D</span>
+            </a>
+            <a href="#" class="flex items-center space-x-3 p-4 rounded-2xl text-gray-400 hover:bg-gray-50 hover:text-black transition font-semibold">
+                <i class="fas fa-heart"></i>
+                <span>Saved Tours</span>
+            </a>
+            <a href="#" class="flex items-center space-x-3 p-4 rounded-2xl text-gray-400 hover:bg-gray-50 hover:text-black transition font-semibold">
+                <i class="fas fa-message"></i>
+                <span>Inquiries</span>
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-gray-50">
+            <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="w-full flex items-center space-x-3 p-4 rounded-2xl text-red-400 hover:bg-red-50 hover:text-red-600 transition font-bold">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Sign Out</span>
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <main class="flex-grow ml-64 flex flex-col min-h-screen">
+        <header class="sticky top-0 z-40 p-6 glass-nav border-b border-gray-50 flex justify-between items-center">
+            <div class="relative w-96">
+                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-300"></i>
+                <input type="text" placeholder="Search by location..." class="w-full pl-12 pr-4 py-3 rounded-2xl border-none bg-gray-100/50 focus:ring-2 focus:ring-blue-500 outline-none transition">
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="text-right">
+                    <p class="text-xs font-black text-black">{{ user.username }}</p>
+                    <p class="text-[10px] text-green-500 font-bold uppercase">Active Tenant</p>
+                </div>
+                <div class="w-12 h-12 bg-black rounded-2xl flex items-center justify-center text-white font-black shadow-xl">
+                    {{ user.username|first|upper }}
+                </div>
+            </div>
+        </header>
+
+        <div class="p-8 flex-grow">
+            {% block content %}
+            {% endblock %}
+        </div>
+
+        <footer class="p-10 border-t border-gray-100 bg-white">
+            <div class="max-w-6xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-8">
+                    <div>
+                        <h4 class="font-black text-blue-600 mb-4 tracking-tighter italic text-xl">MAKAO.</h4>
+                        <p class="text-xs text-gray-400 leading-relaxed">Kenya's first high-immersion 3D property marketplace. Experience your future home before you visit.</p>
+                    </div>
+                    <div>
+                        <h5 class="text-[10px] font-black uppercase tracking-widest text-black mb-4">Support</h5>
+                        <ul class="text-xs text-gray-400 space-y-2">
+                            <li>Help Center</li>
+                            <li>Contact Agent</li>
+                            <li>Safety Guidelines</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h5 class="text-[10px] font-black uppercase tracking-widest text-black mb-4">Legal</h5>
+                        <ul class="text-xs text-gray-400 space-y-2">
+                            <li>Privacy Policy</li>
+                            <li>Terms of Service</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="pt-8 border-t border-gray-50 flex justify-between items-center">
+                    <p class="text-[10px] text-gray-300 font-bold">© 2026 MAKAO DIGITAL LTD. ALL RIGHTS RESERVED.</p>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+</body>
+</html>
