@@ -1,35 +1,39 @@
 {% extends "base_landlord.html" %}
 
 {% block content %}
-<div class="max-w-2xl mx-auto py-12">
-    <div class="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+<div class="max-w-2xl mx-auto py-8">
+    <div class="bg-white rounded-[2.5rem] shadow-2xl border border-gray-100 overflow-hidden">
         <div class="bg-blue-600 p-8 text-white">
-            <h1 class="text-2xl font-black">List a New Property</h1>
-            <p class="text-blue-100">Fill in the details to create your virtual 3D listing.</p>
+            <h1 class="text-3xl font-black italic tracking-tighter">LIST PROPERTY</h1>
+            <p class="text-blue-100 font-medium">Create a high-immersion 3D virtual listing.</p>
         </div>
 
         <form method="post" class="p-8 space-y-6">
             {% csrf_token %}
             
-            {% for field in form %}
-            <div>
-                <label class="block text-sm font-bold text-black mb-2 uppercase tracking-wide">
-                    {{ field.label }}
-                </label>
-                {{ field.errors }}
-                <div class="relative">
+            <div id="form-container" class="space-y-5">
+                {% for field in form %}
+                <div class="field-wrapper">
+                    <label class="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">
+                        {{ field.label }}
+                    </label>
                     {{ field }}
+                    {% if field.errors %}
+                        <p class="text-red-500 text-xs mt-1 font-bold">{{ field.errors.0 }}</p>
+                    {% endif %}
+                    {% if field.help_text %}
+                        <p class="text-[10px] text-gray-400 mt-1 italic">{{ field.help_text }}</p>
+                    {% endif %}
                 </div>
-                {% if field.help_text %}
-                <p class="text-xs text-gray-400 mt-1">{{ field.help_text }}</p>
-                {% endif %}
+                {% endfor %}
             </div>
-            {% endfor %}
 
-            <div class="pt-4 flex items-center justify-between">
-                <a href="{% url 'landlord-dashboard' %}" class="text-gray-500 font-bold hover:text-black transition">Cancel</a>
-                <button type="submit" class="bg-blue-600 hover:bg-black text-white px-10 py-4 rounded-2xl font-black transition shadow-lg">
-                    Publish Property
+            <div class="pt-6 border-t border-gray-100 flex items-center justify-between">
+                <a href="{% url 'landlord-dashboard' %}" class="text-gray-400 font-black uppercase text-xs tracking-widest hover:text-black transition">
+                    <i class="fas fa-arrow-left mr-2"></i> Back
+                </a>
+                <button type="submit" class="bg-blue-600 hover:bg-black text-white px-12 py-4 rounded-2xl font-black transition shadow-xl transform hover:-translate-y-1 active:scale-95">
+                    PUBLISH LISTING
                 </button>
             </div>
         </form>
@@ -37,8 +41,24 @@
 </div>
 
 <script>
-    document.querySelectorAll('input, textarea, select').forEach(el => {
-        el.classList.add('w-full', 'px-4', 'py-3', 'rounded-xl', 'border', 'border-gray-200', 'focus:border-blue-500', 'focus:ring-2', 'focus:ring-blue-200', 'outline-none', 'transition');
+    // Style standard Django inputs with Tailwind classes
+    document.addEventListener("DOMContentLoaded", function() {
+        const inputs = document.querySelectorAll('#form-container input, #form-container textarea, #form-container select');
+        
+        inputs.forEach(el => {
+            el.classList.add(
+                'w-full', 'px-4', 'py-3', 'rounded-xl', 'border', 'border-gray-200', 
+                'focus:border-blue-600', 'focus:ring-4', 'focus:ring-blue-50', 
+                'outline-none', 'transition', 'font-medium', 'text-gray-700'
+            );
+            
+            // Specifically style the Virtual Tour URL to look special
+            if (el.name === 'virtual_tour_url') {
+                el.placeholder = "https://my.matterport.com/show/?m=...";
+                el.classList.remove('border-gray-200');
+                el.classList.add('border-blue-200', 'bg-blue-50/30');
+            }
+        });
     });
 </script>
 {% endblock %}

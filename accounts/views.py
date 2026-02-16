@@ -3,6 +3,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.contrib import messages
 from .models import User
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect
 
 def signup_view(request):
     if request.method == 'POST':
@@ -60,3 +62,14 @@ def signup_view(request):
             messages.error(request, f"Something went wrong: {e}")
             
     return render(request, 'signup.html')
+
+
+@login_required
+def login_success_redirect(request):
+    """
+    Redirects users based on their role after login.
+    """
+    if request.user.is_landlord:
+        return redirect('landlord-dashboard')
+    else:
+        return redirect('property-list')

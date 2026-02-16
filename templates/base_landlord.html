@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Landlord Portal | Makao</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 text-gray-900 font-sans flex flex-col min-h-screen">
+
+    <div class="flex flex-grow">
+        <aside class="w-64 bg-blue-600 text-white hidden md:flex flex-col sticky top-0 h-screen">
+            <div class="p-6">
+                <a href="/" class="text-2xl font-black tracking-tighter">MAKAO</a>
+                <p class="text-xs text-blue-200 uppercase font-bold mt-1">Landlord Console</p>
+            </div>
+
+            <nav class="flex-grow mt-6 px-4 space-y-2">
+                <a href="{% url 'landlord-dashboard' %}" class="flex items-center space-x-3 p-3 rounded-xl hover:bg-blue-700 transition font-bold">
+                    <i class="fas fa-chart-pie w-6"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{% url 'property-add' %}" class="flex items-center space-x-3 p-3 rounded-xl hover:bg-blue-700 transition font-bold text-blue-100">
+                    <i class="fas fa-plus-circle w-6"></i>
+                    <span>Add Property</span>
+                </a>
+                <a href="#" class="flex items-center space-x-3 p-3 rounded-xl hover:bg-blue-700 transition font-bold text-blue-100">
+                    <i class="fas fa-wallet w-6"></i>
+                    <span>M-Pesa Earnings</span>
+                </a>
+            </nav>
+
+            <div class="p-4 border-t border-blue-500">
+    <form action="{% url 'logout' %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="w-full flex items-center space-x-3 p-3 rounded-xl bg-red-500 hover:bg-red-600 transition font-bold text-white">
+            <i class="fas fa-sign-out-alt w-6"></i>
+            <span>Logout</span>
+        </button>
+    </form>
+</div>
+        </aside>
+
+        <div class="flex-grow flex flex-col">
+            <header class="md:hidden bg-blue-600 p-4 text-white flex justify-between items-center">
+                <span class="font-black">MAKAO</span>
+                <button class="text-2xl"><i class="fas fa-bars"></i></button>
+            </header>
+
+            <main class="p-8 flex-grow">
+                {% block content %}
+                {% endblock %}
+            </main>
+
+            <footer class="p-6 border-t border-gray-200 bg-white">
+                <div class="flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
+                    <div>&copy; 2026 Makao Management System.</div>
+                    <div class="flex space-x-4 mt-2 md:mt-0">
+                        <a href="#" class="hover:text-blue-600">Support Helpdesk</a>
+                        <a href="#" class="hover:text-blue-600">Privacy Policy</a>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+</body>
+</html>
