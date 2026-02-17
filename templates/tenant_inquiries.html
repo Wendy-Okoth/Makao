@@ -1,0 +1,48 @@
+{% extends "base_tenant.html" %}
+
+{% block content %}
+<div class="mb-10">
+    <h1 class="text-4xl font-black text-black tracking-tighter uppercase italic">Your Inquiries</h1>
+    <p class="text-gray-500 font-medium tracking-tight">Track messages sent to landlords and view their replies.</p>
+</div>
+
+<div class="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden">
+    <table class="w-full text-left">
+        <thead class="bg-gray-50 border-b border-gray-100">
+            <tr>
+                <th class="px-8 py-4 text-[10px] font-black uppercase text-gray-400">Property</th>
+                <th class="px-8 py-4 text-[10px] font-black uppercase text-gray-400">Initial Inquiry</th>
+                <th class="px-8 py-4 text-[10px] font-black uppercase text-gray-400">Date Sent</th>
+                <th class="px-8 py-4 text-[10px] font-black uppercase text-gray-400 text-right">Action</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-50">
+            {% for inquiry in inquiries %}
+            <tr class="hover:bg-gray-50/50 transition">
+                <td class="px-8 py-6">
+                    <p class="font-bold text-black">{{ inquiry.property.title }}</p>
+                    <p class="text-[10px] text-gray-400 uppercase tracking-widest">{{ inquiry.property.location }}</p>
+                </td>
+                <td class="px-8 py-6 text-sm text-gray-600 italic">"{{ inquiry.message|truncatechars:50 }}"</td>
+                <td class="px-8 py-6 text-sm text-gray-400">{{ inquiry.created_at|date:"M d, Y" }}</td>
+                <td class="px-8 py-6 text-right">
+                    <a href="{% url 'chat-view' inquiry.id %}" 
+                       class="inline-flex items-center gap-2 bg-black text-white px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 transition shadow-lg active:transform active:scale-95">
+                        <i class="fas fa-comment-dots"></i>
+                        Open Chat
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="px-8 py-20 text-center">
+                    <i class="fas fa-paper-plane text-4xl text-gray-100 mb-4 block"></i>
+                    <p class="text-gray-400 font-bold italic uppercase tracking-widest">No inquiries sent yet.</p>
+                    <a href="{% url 'tenant-explore' %}" class="text-blue-600 font-black mt-4 block underline">Start Exploring</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

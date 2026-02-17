@@ -11,7 +11,6 @@
         <div class="lg:col-span-2">
             <div class="flex justify-between items-start mb-2">
                 <h1 class="text-4xl font-black text-gray-900">{{ property.title }}</h1>
-                
                 {% if not user.is_landlord %}
                 <a href="{% url 'toggle-favorite' property.id %}" class="text-2xl transition-all hover:scale-110">
                     <i class="fa-heart {% if property.id in favorited_ids %}fas text-red-500{% else %}far text-gray-400{% endif %}"></i>
@@ -26,17 +25,11 @@
 
             <div class="relative bg-black rounded-[2.5rem] overflow-hidden shadow-2xl mb-8 border-4 border-gray-900" style="padding-top: 56.25%;">
                 {% if property.virtual_tour_url %}
-                    <iframe 
-                        src="{{ property.virtual_tour_url }}" 
-                        class="absolute top-0 left-0 w-full h-full"
-                        frameborder="0" 
-                        allowfullscreen 
-                        allow="xr-spatial-tracking">
-                    </iframe>
+                    <iframe src="{{ property.virtual_tour_url }}" class="absolute top-0 left-0 w-full h-full" frameborder="0" allowfullscreen allow="xr-spatial-tracking"></iframe>
                 {% else %}
                     <div class="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center text-white italic bg-gray-900">
                         <i class="fas fa-vr-cardboard text-5xl mb-4 text-gray-700"></i>
-                        No 3D virtual tour available for this property.
+                        No 3D virtual tour available.
                     </div>
                 {% endif %}
             </div>
@@ -51,24 +44,29 @@
             <div class="bg-white p-8 rounded-[2.5rem] shadow-xl border border-blue-50 sticky top-10">
                 <div class="mb-6">
                     <span class="text-gray-500 block text-sm uppercase font-black tracking-widest">Monthly Rent</span>
-                    <span class="text-4xl font-black text-blue-600 tracking-tighter">KES {{ property.price }}</span>
+                    <span class="text-4xl font-black text-blue-600">KES {{ property.price }}</span>
                 </div>
 
                 <div class="space-y-4">
                     {% if user.is_landlord %}
                         <div class="p-4 bg-blue-50 rounded-2xl border border-blue-100">
-                            <p class="text-blue-700 font-bold text-sm text-center">This is your listing.</p>
+                            <p class="text-blue-700 font-bold text-sm text-center">Manage your listing via the dashboard.</p>
                         </div>
                     {% else %}
-                        <button class="w-full bg-green-500 hover:bg-green-600 text-white py-4 rounded-2xl font-bold text-lg shadow-lg transition-all transform hover:-translate-y-1">
+                        <button class="w-full bg-green-500 hover:bg-green-600 text-white py-4 rounded-2xl font-bold text-lg shadow-lg transition-all">
                             Secure with M-Pesa
                         </button>
-                        <button class="w-full bg-black text-white py-4 rounded-2xl font-bold text-lg shadow-lg transition-all hover:bg-gray-800">
-                            Inquire Now
-                        </button>
-                        <p class="text-xs text-center text-gray-400">
-                            Payments are processed securely via Daraja API.
-                        </p>
+                        
+                        <div class="mt-6 border-t pt-6">
+                            <p class="text-xs font-black uppercase text-gray-400 mb-4 tracking-widest">Interested?</p>
+                            <form action="{% url 'send-inquiry' property.id %}" method="POST">
+                                {% csrf_token %}
+                                <textarea name="message" rows="3" class="w-full p-4 bg-gray-50 rounded-2xl border-none focus:ring-2 focus:ring-blue-600 mb-2 text-sm" placeholder="Ask the landlord about availability..."></textarea>
+                                <button type="submit" class="w-full bg-black text-white py-3 rounded-2xl font-bold hover:bg-gray-800 transition">
+                                    Send Inquiry
+                                </button>
+                            </form>
+                        </div>
                     {% endif %}
                 </div>
 
@@ -76,7 +74,7 @@
 
                 <div class="flex items-center space-x-4">
                     <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 font-black">
-                        {{ property.landlord.username|slice:":1"|upper }}
+                        {{ property.landlord.username|first|upper }}
                     </div>
                     <div>
                         <p class="text-xs text-gray-400 uppercase font-black tracking-widest">Listed by</p>

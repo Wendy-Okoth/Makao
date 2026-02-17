@@ -29,8 +29,8 @@
         <i class="fas fa-heart"></i>
         <span>Saved Tours</span>
     </a>
-    <a href="#" class="flex items-center space-x-3 p-4 rounded-2xl text-gray-400 hover:bg-gray-50 hover:text-black transition font-semibold">
-        <i class="fas fa-message"></i>
+    <a href="{% url 'tenant-inquiries' %}" class="flex items-center space-x-3 p-4 rounded-2xl {% if request.resolver_match.url_name == 'tenant-inquiries' %}bg-blue-50 text-blue-600{% else %}text-gray-400 hover:bg-gray-50 hover:text-black{% endif %} transition font-semibold">
+        <i class="fas fa-envelope"></i>
         <span>Inquiries</span>
     </a>
 </nav>

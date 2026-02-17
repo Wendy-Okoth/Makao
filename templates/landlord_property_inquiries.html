@@ -1,0 +1,43 @@
+{% extends "base_landlord.html" %}
+
+{% block content %}
+<div class="mb-10">
+    <a href="{% url 'landlord-dashboard' %}" class="text-blue-600 font-bold text-sm flex items-center gap-2">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+    <h1 class="text-4xl font-black text-black tracking-tighter uppercase italic mt-4">Inquiries: {{ property.title }}</h1>
+    <p class="text-gray-500 font-medium tracking-tight">Direct messages from potential tenants.</p>
+</div>
+
+<div class="space-y-6">
+    {% for inquiry in inquiries %}
+    <div class="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm">
+        <div class="flex justify-between items-start mb-6">
+            <div class="flex items-center space-x-4">
+                <div class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white font-black text-xl">
+                    {{ inquiry.tenant.username|first|upper }}
+                </div>
+                <div>
+                    <h3 class="font-black text-black text-lg">{{ inquiry.tenant.username }}</h3>
+                    <p class="text-gray-400 text-xs uppercase tracking-widest font-bold">Inquiry Date: {{ inquiry.created_at|date:"M d, Y" }}</p>
+                </div>
+            </div>
+            
+            <a href="{% url 'chat-view' inquiry.id %}" class="bg-black text-white px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl hover:bg-blue-600 transition">
+                Open Chat
+            </a>
+        </div>
+
+        <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100 italic text-gray-700 relative">
+            <i class="fas fa-quote-left absolute -top-3 left-4 text-blue-200 text-2xl"></i>
+            "{{ inquiry.message }}"
+        </div>
+    </div>
+    {% empty %}
+    <div class="py-20 text-center bg-white rounded-[3rem] border-2 border-dashed border-gray-100">
+        <i class="fas fa-comment-slash text-4xl text-gray-200 mb-4 block"></i>
+        <p class="text-gray-400 font-bold italic uppercase tracking-widest">No inquiries for this listing yet.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -26,7 +26,11 @@ from properties.views import (
     TenantDashboardView,
     TenantExploreView,
     toggle_favorite,
-    FavoriteListView # Added this
+    FavoriteListView,
+    InquiryListView,
+    send_inquiry,
+    PropertyInquiryListView,
+    chat_view
 )
 from accounts.views import signup_view, login_success_redirect
 
@@ -44,6 +48,10 @@ urlpatterns = [
     path('about/', TemplateView.as_view(template_name='about.html'), name='about'),
     path('tenant/dashboard/', TenantDashboardView.as_view(), name='tenant-dashboard'),
     path('tenant/explore/', TenantExploreView.as_view(), name='tenant-explore'),
-    path('tenant/favorites/', FavoriteListView.as_view(), name='tenant-favorites'), # Fixed the error
+    path('tenant/favorites/', FavoriteListView.as_view(), name='tenant-favorites'), 
     path('property/<int:property_id>/favorite/', toggle_favorite, name='toggle-favorite'),
+    path('property/<int:property_id>/inquire/', send_inquiry, name='send-inquiry'),
+    path('tenant/inquiries/', InquiryListView.as_view(), name='tenant-inquiries'),
+    path('chat/<int:inquiry_id>/', chat_view, name='chat-view'),
+    path('dashboard/property/<int:property_id>/inquiries/', PropertyInquiryListView.as_view(), name='property-inquiries'),
 ]

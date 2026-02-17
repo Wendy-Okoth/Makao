@@ -38,8 +38,24 @@ class Favorite(models.Model):
         unique_together = ('user', 'property') # Prevents double-favoriting
 
 class Inquiry(models.Model):
-    tenant = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='inquiries')
-    property = models.ForeignKey('Property', on_delete=models.CASCADE, related_name='inquiries')
-    message = models.TextField(blank=True)
-    status = models.CharField(max_length=20, default='Pending') # Pending, Accepted, Declined
+    tenant = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='sent_inquiries')
+    property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='inquiries')
+    message = models.TextField(default="I am interested in this property. Please contact me with more details.")
     created_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name_plural = "Inquiries"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Inquiry by {self.tenant.username} for {self.property.title}"
+
+class Message(models.Model):
+    inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE, related_name='messages')
+    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['created_at']
