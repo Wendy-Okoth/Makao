@@ -14,7 +14,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
+from django.contrib import admin 
 from django.urls import path
 from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
@@ -24,7 +24,9 @@ from properties.views import (
     PropertyDetailView, 
     LandlordDashboardView,
     TenantDashboardView,
-    TenantExploreView
+    TenantExploreView,
+    toggle_favorite,
+    FavoriteListView # Added this
 )
 from accounts.views import signup_view, login_success_redirect
 
@@ -42,5 +44,6 @@ urlpatterns = [
     path('about/', TemplateView.as_view(template_name='about.html'), name='about'),
     path('tenant/dashboard/', TenantDashboardView.as_view(), name='tenant-dashboard'),
     path('tenant/explore/', TenantExploreView.as_view(), name='tenant-explore'),
+    path('tenant/favorites/', FavoriteListView.as_view(), name='tenant-favorites'), # Fixed the error
+    path('property/<int:property_id>/favorite/', toggle_favorite, name='toggle-favorite'),
 ]
-  
