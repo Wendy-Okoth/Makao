@@ -34,11 +34,28 @@ class TenantDashboardView(LoginRequiredMixin, TemplateView):
         context['saved_count'] = Favorite.objects.filter(user=self.request.user).count()
         return context
 
-# 4. TENANT: Logged-in Marketplace
 class TenantExploreView(LoginRequiredMixin, ListView):
     model = Property
     template_name = 'view_property.html'
     context_object_name = 'properties'
+
+    def get_queryset(self):
+        # Start with all available properties
+        queryset = Property.objects.filter(is_available=True)
+        
+        # Get search parameters from the GET request
+        location_query = self.request.GET.get('location')
+        max_price = self.request.GET.get('max_price')
+
+        if location_query:
+            # __icontains makes the search case-insensitive
+            queryset = queryset.filter(location__icontains=location_query)
+        
+        if max_price:
+            # __lte finds prices "Less Than or Equal" to the input
+            queryset = queryset.filter(price__lte=max_price)
+
+        return queryset.order_by('-created_at')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -47,9 +64,6 @@ class TenantExploreView(LoginRequiredMixin, ListView):
                 user=self.request.user
             ).values_list('property_id', flat=True)
         return context
-
-    def get_queryset(self):
-        return Property.objects.filter(is_available=True).order_by('-created_at')
 
 # 5. LANDLORD: Dashboard
 class LandlordDashboardView(LoginRequiredMixin, ListView):

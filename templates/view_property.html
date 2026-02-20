@@ -1,9 +1,35 @@
 {% extends "base_tenant.html" %}
 
 {% block content %}
-<div class="mb-10">
-    <h2 class="text-3xl font-black text-black italic tracking-tighter uppercase">Available Tours</h2>
-    <p class="text-gray-400 font-medium">Explore high-immersion listings ready for you.</p>
+<div class="mb-10 flex flex-col md:flex-row justify-between items-end gap-6">
+    <div>
+        <h2 class="text-3xl font-black text-black italic tracking-tighter uppercase">Available Tours</h2>
+        <p class="text-gray-400 font-medium">Explore high-immersion listings ready for you.</p>
+    </div>
+
+    <form method="GET" class="w-full md:w-auto flex flex-wrap md:flex-nowrap gap-3">
+        <div class="relative flex-grow">
+            <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+            <input type="text" name="location" placeholder="Location..." value="{{ request.GET.location }}"
+                   class="w-full md:w-64 pl-10 pr-4 py-3 bg-white border border-gray-100 rounded-2xl text-sm focus:ring-2 focus:ring-blue-600 outline-none shadow-sm transition-all">
+        </div>
+        
+        <div class="relative w-32 md:w-40">
+            <i class="fas fa-tag absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+            <input type="number" name="max_price" placeholder="Max Price" value="{{ request.GET.max_price }}"
+                   class="w-full pl-10 pr-4 py-3 bg-white border border-gray-100 rounded-2xl text-sm focus:ring-2 focus:ring-blue-600 outline-none shadow-sm transition-all">
+        </div>
+
+        <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-black transition shadow-lg">
+            Filter
+        </button>
+
+        {% if request.GET.location or request.GET.max_price %}
+        <a href="{% url 'tenant-explore' %}" class="flex items-center justify-center px-4 py-3 text-red-500 hover:bg-red-50 rounded-2xl transition font-black text-[10px] uppercase tracking-widest">
+            Clear
+        </a>
+        {% endif %}
+    </form>
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -20,7 +46,7 @@
 
             {% if property.virtual_tour_url %}
             <div class="absolute top-4 left-4 bg-blue-600 text-white text-[10px] font-black px-3 py-1.5 rounded-full flex items-center shadow-lg">
-                <i class="fas fa-vr-cardboard mr-2"></i> 3D TOUR
+                <i class="fas fa-vr-cardboard mr-2 text-xs"></i> 3D TOUR
             </div>
             {% endif %}
             
@@ -42,7 +68,9 @@
     </div>
     {% empty %}
     <div class="col-span-full py-20 text-center bg-white rounded-[3rem] border-2 border-dashed border-gray-100">
-        <p class="text-gray-400 font-bold italic">No 3D listings available right now. Check back soon!</p>
+        <i class="fas fa-search text-4xl text-gray-100 mb-4 block"></i>
+        <p class="text-gray-400 font-bold italic">No listings match your search criteria.</p>
+        <a href="{% url 'tenant-explore' %}" class="text-blue-600 font-black text-xs uppercase mt-4 inline-block underline">View all properties</a>
     </div>
     {% endfor %}
 </div>
