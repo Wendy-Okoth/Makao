@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Inquiry , Message
 from django.db.models import Count
+from django.db.models import Q
 
 # 1. PUBLIC: Gallery
 class PropertyListView(ListView):
@@ -153,9 +154,11 @@ class PropertyInquiryListView(LoginRequiredMixin, UserPassesTestMixin, ListView)
 def chat_view(request, inquiry_id):
     inquiry = get_object_or_404(Inquiry, id=inquiry_id)
     
-    # Security: Only the tenant who started it or the landlord who owns the property can enter
     if request.user != inquiry.tenant and request.user != inquiry.property.landlord:
         raise PermissionDenied
+
+    # --- NEW: Mark messages as Read ---
+    inquiry.messages.filter(is_read=False).exclude(sender=request.user).update(is_read=True)
 
     if request.method == "POST":
         content = request.POST.get('message')
@@ -165,7 +168,6 @@ def chat_view(request, inquiry_id):
                 sender=request.user,
                 text=content
             )
-            # Mark as unread for the OTHER person (we'll do status later)
             return redirect('chat-view', inquiry_id=inquiry.id)
 
     chat_messages = inquiry.messages.all()
@@ -173,3 +175,11 @@ def chat_view(request, inquiry_id):
         'inquiry': inquiry,
         'chat_messages': chat_messages
     })
+
+def get_queryset(self):
+    return Property.objects.filter(landlord=self.request.user)\
+        .annotate(
+            inquiry_count=Count('inquiries'),
+            # Count unread messages that weren't sent by the landlord
+            unread_count=Count('inquiries__messages', filter=Q(inquiries__messages__is_read=False) & ~Q(inquiries__messages__sender=self.request.user))
+        ).order_by('-created_at')

@@ -13,21 +13,17 @@
 
 <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
     <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 relative group overflow-hidden">
-        <div class="relative">
-            <h3 class="text-gray-400 text-[10px] font-black uppercase tracking-widest">Active Listings</h3>
-            <p class="text-5xl font-black text-black mt-2">{{ my_properties.count }}</p>
-            <div class="mt-4 flex items-center text-green-500 font-bold text-xs uppercase">
-                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2"></span> 100% Online
-            </div>
+        <h3 class="text-gray-400 text-[10px] font-black uppercase tracking-widest">Active Listings</h3>
+        <p class="text-5xl font-black text-black mt-2">{{ my_properties.count }}</p>
+        <div class="mt-4 flex items-center text-green-500 font-bold text-xs uppercase">
+            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2"></span> 100% Online
         </div>
     </div>
 
     <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100">
-        <h3 class="text-gray-400 text-[10px] font-black uppercase tracking-widest">Pending Inquiries</h3>
-        <p class="text-5xl font-black text-blue-600 mt-2">
-            {% if total_inquiries %}{{ total_inquiries }}{% else %}0{% endif %}
-        </p>
-        <p class="mt-4 text-xs font-bold text-gray-400 uppercase">New Messages</p>
+        <h3 class="text-gray-400 text-[10px] font-black uppercase tracking-widest">Global Inquiries</h3>
+        <p class="text-5xl font-black text-blue-600 mt-2">{{ total_inquiries|default:"0" }}</p>
+        <p class="mt-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Across all listings</p>
     </div>
 
     <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100">
@@ -63,16 +59,23 @@
                 </div>
 
                 <div class="text-right hidden md:block">
-                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Rent</p>
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Monthly Rent</p>
                     <p class="text-lg font-black text-black">KES {{ property.price }}</p>
                 </div>
 
-                <div class="flex items-center gap-2">
-                    <a href="{% url 'property-inquiries' property.id %}" class="px-4 py-2 rounded-xl bg-black text-white text-xs font-black uppercase hover:bg-blue-600 transition shadow-sm">
+                <div class="flex items-center gap-4">
+                    <a href="{% url 'property-inquiries' property.id %}" 
+                       class="relative px-6 py-3 rounded-xl bg-black text-white text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 transition shadow-md">
                         Messages
+                        {% if property.unread_count > 0 %}
+                        <span class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full animate-bounce shadow-lg border-2 border-white">
+                            {{ property.unread_count }}
+                        </span>
+                        {% endif %}
                     </a>
-                    <a href="{% url 'property-detail' property.id %}" class="w-10 h-10 rounded-xl bg-white border border-gray-100 flex items-center justify-center hover:bg-gray-100 transition shadow-sm">
-                        <i class="fas fa-eye text-xs"></i>
+                    
+                    <a href="{% url 'property-detail' property.id %}" class="w-12 h-12 rounded-xl bg-white border border-gray-100 flex items-center justify-center hover:bg-gray-100 transition shadow-sm text-gray-400 hover:text-blue-600">
+                        <i class="fas fa-eye"></i>
                     </a>
                 </div>
             </div>

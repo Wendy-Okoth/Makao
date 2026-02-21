@@ -9,24 +9,35 @@
             </div>
             <div>
                 <h2 class="font-black text-black">{{ inquiry.property.title }}</h2>
-                <p class="text-xs text-gray-400 font-bold uppercase">Chatting with {% if user.is_landlord %}{{ inquiry.tenant.username }}{% else %}Landlord{% endif %}</p>
+                <p class="text-xs text-gray-400 font-bold uppercase tracking-tight">
+                    Chatting with {% if user.is_landlord %}{{ inquiry.tenant.username }}{% else %}Landlord{% endif %}
+                </p>
             </div>
         </div>
     </div>
 
-    <div class="flex-grow overflow-y-auto p-6 space-y-4 bg-gray-50/50">
-        <div class="flex justify-start">
-            <div class="bg-white border border-gray-100 p-4 rounded-2xl rounded-tl-none max-w-md shadow-sm">
-                <p class="text-xs font-black text-blue-600 mb-1 uppercase">{{ inquiry.tenant.username }} (Inquiry)</p>
-                <p class="text-gray-700">{{ inquiry.message }}</p>
+    <div class="flex-grow overflow-y-auto p-6 space-y-6 bg-gray-50/50">
+        
+        <div class="flex {% if not user.is_landlord %}justify-end{% else %}justify-start{% endif %}">
+            <div class="{% if not user.is_landlord %}bg-blue-600 text-white rounded-tr-none{% else %}bg-white border border-gray-200 text-gray-800 rounded-tl-none{% endif %} p-4 rounded-2xl max-w-md shadow-sm">
+                <p class="text-[10px] font-black {% if not user.is_landlord %}text-blue-200{% else %}text-blue-600{% endif %} mb-1 uppercase tracking-widest">
+                    {{ inquiry.tenant.username }} (Initial Inquiry)
+                </p>
+                <p class="text-sm leading-relaxed">{{ inquiry.message }}</p>
+                <p class="text-[9px] mt-2 opacity-60 font-bold text-right uppercase">{{ inquiry.created_at|date:"H:i" }}</p>
             </div>
         </div>
 
         {% for msg in chat_messages %}
         <div class="flex {% if msg.sender == request.user %}justify-end{% else %}justify-start{% endif %}">
-            <div class="{% if msg.sender == request.user %}bg-blue-600 text-white rounded-tr-none{% else %}bg-white text-gray-800 border border-gray-100 rounded-tl-none{% endif %} p-4 rounded-2xl max-w-md shadow-sm">
-                <p class="text-sm">{{ msg.text }}</p>
-                <p class="text-[9px] mt-2 opacity-70 font-bold uppercase">{{ msg.created_at|time:"H:i" }}</p>
+            <div class="{% if msg.sender == request.user %}bg-blue-600 text-white rounded-tr-none{% else %}bg-white text-gray-800 border border-gray-100 rounded-tl-none{% endif %} p-4 rounded-2xl max-w-md shadow-sm relative">
+                <p class="text-sm leading-relaxed">{{ msg.text }}</p>
+                <div class="flex items-center justify-end mt-1 space-x-1 opacity-60">
+                    <p class="text-[9px] font-bold uppercase">{{ msg.created_at|date:"H:i" }}</p>
+                    {% if msg.sender == request.user %}
+                        <i class="fas {% if msg.is_read %}fa-check-double text-blue-200{% else %}fa-check{% endif %} text-[8px]"></i>
+                    {% endif %}
+                </div>
             </div>
         </div>
         {% endfor %}
@@ -36,8 +47,8 @@
         <form method="POST" class="flex gap-4">
             {% csrf_token %}
             <input type="text" name="message" placeholder="Type your message..." required
-                   class="flex-grow p-4 bg-gray-100 rounded-2xl border-none focus:ring-2 focus:ring-blue-600 outline-none">
-            <button type="submit" class="bg-black text-white px-8 rounded-2xl font-black hover:bg-blue-600 transition">
+                   class="flex-grow p-4 bg-gray-100 rounded-2xl border-none focus:ring-2 focus:ring-blue-600 outline-none transition-all">
+            <button type="submit" class="bg-black text-white px-8 rounded-2xl font-black hover:bg-blue-600 transition transform active:scale-95 shadow-lg">
                 <i class="fas fa-paper-plane"></i>
             </button>
         </form>

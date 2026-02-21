@@ -54,6 +54,7 @@ class Inquiry(models.Model):
 class Message(models.Model):
     inquiry = models.ForeignKey(Inquiry, on_delete=models.CASCADE, related_name='messages')
     sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    is_read = models.BooleanField(default=False)
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
