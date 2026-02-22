@@ -43,19 +43,28 @@ class TenantExploreView(LoginRequiredMixin, ListView):
         # Start with all available properties
         queryset = Property.objects.filter(is_available=True)
         
-        # Get search parameters from the GET request
+        # Get search and sort parameters from the GET request
         location_query = self.request.GET.get('location')
         max_price = self.request.GET.get('max_price')
+        sort_by = self.request.GET.get('sort')
 
+        # Apply Search Filters
         if location_query:
-            # __icontains makes the search case-insensitive
             queryset = queryset.filter(location__icontains=location_query)
         
         if max_price:
-            # __lte finds prices "Less Than or Equal" to the input
             queryset = queryset.filter(price__lte=max_price)
 
-        return queryset.order_by('-created_at')
+        # Apply Sorting Logic
+        if sort_by == 'price_asc':
+            queryset = queryset.order_by('price')
+        elif sort_by == 'price_desc':
+            queryset = queryset.order_by('-price')
+        else:
+            # Default: Newest first
+            queryset = queryset.order_by('-created_at')
+
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
