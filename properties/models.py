@@ -2,12 +2,23 @@ from django.db import models
 from django.conf import settings
 
 class Property(models.Model):
+    CATEGORY_CHOICES = [
+        ('bedsitter', 'Bedsitter'),
+        ('single_room', 'Single Room'),
+        ('one_bedroom', '1 Bedroom'),
+        ('two_bedroom', '2 Bedroom'),
+        ('three_bedroom', '3 Bedroom'),
+        ('studio', 'Studio'),
+        ('mansionette', 'Mansionette'),
+    ]
+
     landlord = models.ForeignKey(
         settings.AUTH_USER_MODEL, 
         on_delete=models.CASCADE, 
         related_name='my_properties'
     )
     title = models.CharField(max_length=200)
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='bedsitter') # New Field
     description = models.TextField()
     location = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=10, decimal_places=2)

@@ -4,7 +4,7 @@
 <div class="max-w-2xl mx-auto py-8">
     <div class="bg-white rounded-[2.5rem] shadow-2xl border border-gray-100 overflow-hidden">
         <div class="bg-blue-600 p-8 text-white">
-            <h1 class="text-3xl font-black italic tracking-tighter">LIST PROPERTY</h1>
+            <h1 class="text-3xl font-black italic tracking-tighter uppercase">List Property</h1>
             <p class="text-blue-100 font-medium">Create a high-immersion 3D virtual listing.</p>
         </div>
 
@@ -14,15 +14,12 @@
             <div id="form-container" class="space-y-5">
                 {% for field in form %}
                 <div class="field-wrapper">
-                    <label class="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">
+                    <label class="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1">
                         {{ field.label }}
                     </label>
                     {{ field }}
                     {% if field.errors %}
                         <p class="text-red-500 text-xs mt-1 font-bold">{{ field.errors.0 }}</p>
-                    {% endif %}
-                    {% if field.help_text %}
-                        <p class="text-[10px] text-gray-400 mt-1 italic">{{ field.help_text }}</p>
                     {% endif %}
                 </div>
                 {% endfor %}
@@ -41,22 +38,19 @@
 </div>
 
 <script>
-    // Style standard Django inputs with Tailwind classes
     document.addEventListener("DOMContentLoaded", function() {
         const inputs = document.querySelectorAll('#form-container input, #form-container textarea, #form-container select');
         
         inputs.forEach(el => {
             el.classList.add(
-                'w-full', 'px-4', 'py-3', 'rounded-xl', 'border', 'border-gray-200', 
-                'focus:border-blue-600', 'focus:ring-4', 'focus:ring-blue-50', 
-                'outline-none', 'transition', 'font-medium', 'text-gray-700'
+                'w-full', 'px-4', 'py-3', 'rounded-xl', 'border', 'border-gray-200', 'bg-gray-50',
+                'focus:border-blue-600', 'focus:bg-white', 'focus:ring-4', 'focus:ring-blue-50', 
+                'outline-none', 'transition', 'font-bold', 'text-gray-700'
             );
             
-            // Specifically style the Virtual Tour URL to look special
             if (el.name === 'virtual_tour_url') {
-                el.placeholder = "https://my.matterport.com/show/?m=...";
-                el.classList.remove('border-gray-200');
-                el.classList.add('border-blue-200', 'bg-blue-50/30');
+                el.placeholder = "Paste Matterport URL here...";
+                el.classList.add('font-mono', 'text-sm');
             }
         });
     });

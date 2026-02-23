@@ -40,12 +40,12 @@ class TenantExploreView(LoginRequiredMixin, ListView):
     context_object_name = 'properties'
 
     def get_queryset(self):
-        # Start with all available properties
         queryset = Property.objects.filter(is_available=True)
         
-        # Get search and sort parameters from the GET request
+        # Get parameters from GET request
         location_query = self.request.GET.get('location')
         max_price = self.request.GET.get('max_price')
+        category_query = self.request.GET.get('category')
         sort_by = self.request.GET.get('sort')
 
         # Apply Search Filters
@@ -55,13 +55,15 @@ class TenantExploreView(LoginRequiredMixin, ListView):
         if max_price:
             queryset = queryset.filter(price__lte=max_price)
 
+        if category_query:
+            queryset = queryset.filter(category=category_query)
+
         # Apply Sorting Logic
         if sort_by == 'price_asc':
             queryset = queryset.order_by('price')
         elif sort_by == 'price_desc':
             queryset = queryset.order_by('-price')
         else:
-            # Default: Newest first
             queryset = queryset.order_by('-created_at')
 
         return queryset
@@ -73,7 +75,7 @@ class TenantExploreView(LoginRequiredMixin, ListView):
                 user=self.request.user
             ).values_list('property_id', flat=True)
         return context
-
+    
 # 5. LANDLORD: Dashboard
 class LandlordDashboardView(LoginRequiredMixin, ListView):
     model = Property
@@ -99,7 +101,7 @@ class LandlordDashboardView(LoginRequiredMixin, ListView):
 class PropertyCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Property
     template_name = 'property_list.html' 
-    fields = ['title', 'description', 'location', 'price', 'virtual_tour_url']
+    fields = ['title', 'category','description', 'location', 'price', 'virtual_tour_url']
     success_url = reverse_lazy('landlord-dashboard')
 
     def test_func(self):

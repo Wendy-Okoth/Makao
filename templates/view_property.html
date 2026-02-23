@@ -11,22 +11,37 @@
         <div class="relative flex-grow">
             <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
             <input type="text" name="location" placeholder="Location..." value="{{ request.GET.location|default:'' }}"
-                   class="w-full md:w-48 pl-10 pr-4 py-3 bg-white border border-gray-100 rounded-2xl text-sm focus:ring-2 focus:ring-blue-600 outline-none shadow-sm transition-all">
+                   class="w-full md:w-40 pl-10 pr-4 py-3 bg-white border border-gray-100 rounded-2xl text-sm focus:ring-2 focus:ring-blue-600 outline-none shadow-sm transition-all">
         </div>
         
+        <div class="relative w-full md:w-40">
+            <i class="fas fa-home absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+            <select name="category" onchange="this.form.submit()" 
+                    class="w-full pl-10 pr-8 py-3 bg-white border border-gray-100 rounded-2xl text-sm focus:ring-2 focus:ring-blue-600 outline-none shadow-sm appearance-none cursor-pointer">
+                <option value="">All Types</option>
+                <option value="bedsitter" {% if request.GET.category == 'bedsitter' %}selected{% endif %}>Bedsitter</option>
+                <option value="single_room" {% if request.GET.category == 'single_room' %}selected{% endif %}>Single Room</option>
+                <option value="one_bedroom" {% if request.GET.category == 'one_bedroom' %}selected{% endif %}>1 Bedroom</option>
+                <option value="two_bedroom" {% if request.GET.category == 'two_bedroom' %}selected{% endif %}>2 Bedroom</option>
+                <option value="three_bedroom" {% if request.GET.category == 'three_bedroom' %}selected{% endif %}>3 Bedroom</option>
+                <option value="studio" {% if request.GET.category == 'studio' %}selected{% endif %}>Studio</option>
+                <option value="mansionette" {% if request.GET.category == 'mansionette' %}selected{% endif %}>Mansionette</option>
+            </select>
+        </div>
+
         <div class="relative w-full md:w-32">
             <i class="fas fa-tag absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-            <input type="number" name="max_price" placeholder="Max Price" value="{{ request.GET.max_price|default:'' }}"
+            <input type="number" name="max_price" placeholder="Price" value="{{ request.GET.max_price|default:'' }}"
                    class="w-full pl-10 pr-4 py-3 bg-white border border-gray-100 rounded-2xl text-sm focus:ring-2 focus:ring-blue-600 outline-none shadow-sm transition-all">
         </div>
 
-        <div class="relative w-full md:w-44">
+        <div class="relative w-full md:w-40">
             <i class="fas fa-sort-amount-down absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
             <select name="sort" onchange="this.form.submit()" 
                     class="w-full pl-10 pr-8 py-3 bg-white border border-gray-100 rounded-2xl text-sm focus:ring-2 focus:ring-blue-600 outline-none shadow-sm appearance-none cursor-pointer">
-                <option value="newest" {% if request.GET.sort == 'newest' %}selected{% endif %}>Newest First</option>
-                <option value="price_asc" {% if request.GET.sort == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
-                <option value="price_desc" {% if request.GET.sort == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
+                <option value="newest" {% if request.GET.sort == 'newest' %}selected{% endif %}>Newest</option>
+                <option value="price_asc" {% if request.GET.sort == 'price_asc' %}selected{% endif %}>Lowest Price</option>
+                <option value="price_desc" {% if request.GET.sort == 'price_desc' %}selected{% endif %}>Highest Price</option>
             </select>
         </div>
 
@@ -34,7 +49,7 @@
             Filter
         </button>
 
-        {% if request.GET.location or request.GET.max_price or request.GET.sort and request.GET.sort != 'newest' %}
+        {% if request.GET.location or request.GET.max_price or request.GET.category or request.GET.sort and request.GET.sort != 'newest' %}
         <a href="{% url 'tenant-explore' %}" class="flex items-center justify-center px-4 py-3 text-red-500 hover:bg-red-50 rounded-2xl transition font-black text-[10px] uppercase tracking-widest">
             Clear
         </a>
@@ -54,13 +69,17 @@
                 <i class="fa-heart {% if property.id in favorited_ids %}fas text-red-500 animate-bounce{% else %}far text-gray-400{% endif %}"></i>
             </a>
 
+            <div class="absolute bottom-4 left-4 bg-black/50 backdrop-blur text-white text-[9px] font-black px-3 py-1.5 rounded-lg uppercase tracking-widest">
+                {{ property.get_category_display }}
+            </div>
+
             {% if property.virtual_tour_url %}
             <div class="absolute top-4 left-4 bg-blue-600 text-white text-[10px] font-black px-3 py-1.5 rounded-full flex items-center shadow-lg">
                 <i class="fas fa-vr-cardboard mr-2 text-xs"></i> 3D TOUR
             </div>
             {% endif %}
             
-            <div class="absolute bottom-4 right-4 bg-white/90 backdrop-blur text-black px-4 py-2 rounded-xl font-black text-sm">
+            <div class="absolute bottom-4 right-4 bg-white/90 backdrop-blur text-black px-4 py-2 rounded-xl font-black text-sm shadow-sm">
                 KES {{ property.price }}
             </div>
         </div>
