@@ -6,9 +6,13 @@ from django.core.exceptions import PermissionDenied
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Inquiry , Message
+from .models import Inquiry , Message , Transaction ,Property
 from django.db.models import Count
 from django.db.models import Q
+import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from .mpesa_utils import MpesaClient
 
 # 1. PUBLIC: Gallery
 class PropertyListView(ListView):
@@ -208,3 +212,82 @@ def get_queryset(self):
             # Count unread messages that weren't sent by the landlord
             unread_count=Count('inquiries__messages', filter=Q(inquiries__messages__is_read=False) & ~Q(inquiries__messages__sender=self.request.user))
         ).order_by('-created_at')
+
+
+@csrf_exempt
+def mpesa_callback(request):
+    data = json.loads(request.body)
+    result_code = data['Body']['stkCallback']['ResultCode']
+    checkout_id = data['Body']['stkCallback']['CheckoutRequestID']
+
+    if result_code == 0:  # Code 0 means success!
+        # Find the transaction
+        transaction = Transaction.objects.get(checkout_request_id=checkout_id)
+        transaction.status = 'Success'
+        
+        # Get Receipt Number
+        items = data['Body']['stkCallback']['CallbackMetadata']['Item']
+        for item in items:
+            if item['Name'] == 'MpesaReceiptNumber':
+                transaction.mpesa_receipt = item['Value']
+        
+        transaction.save()
+
+        # Update Property Status
+        prop = transaction.property
+        prop.is_available = False
+        prop.reserved_by = transaction.tenant
+        prop.save()
+
+    return JsonResponse({"ResultCode": 0, "ResultDesc": "Accepted"})
+
+
+def initiate_payment(request, property_id):
+    if request.method == "POST":
+        prop = get_object_or_404(Property, id=property_id)
+        phone = request.POST.get('phone') # Expected format: 2547XXXXXXXX
+        amount = prop.booking_fee
+        
+        client = MpesaClient()
+        # We still provide a dummy callback URL as the API requires it
+        response = client.stk_push(phone, amount, "https://example.com/callback")
+        
+        if response.get('ResponseCode') == '0':
+            # Create a record so we can track this payment
+            Transaction.objects.create(
+                property=prop,
+                tenant=request.user,
+                checkout_request_id=response.get('CheckoutRequestID'),
+                merchant_request_id=response.get('MerchantRequestID'),
+                amount=amount,
+                phone_number=phone
+            )
+            return JsonResponse({
+                'status': 'initiated', 
+                'checkout_id': response.get('CheckoutRequestID')
+            })
+        
+        return JsonResponse({'status': 'failed', 'message': response.get('CustomerMessage')})
+
+def check_payment_status(request, checkout_id):
+    client = MpesaClient()
+    response = client.check_status(checkout_id)
+    
+    result_code = response.get('ResultCode')
+    
+    if result_code == '0':
+        transaction = Transaction.objects.get(checkout_request_id=checkout_id)
+        transaction.status = 'Success'
+        transaction.save()
+        
+        # LOGIC: Hide the property
+        prop = transaction.property
+        prop.is_available = False
+        prop.reserved_by = transaction.tenant
+        prop.save()
+        
+        return JsonResponse({'status': 'success'})
+    elif result_code in ['1032', '1037']:
+        return JsonResponse({'status': 'failed'})
+        
+    return JsonResponse({'status': 'pending'})

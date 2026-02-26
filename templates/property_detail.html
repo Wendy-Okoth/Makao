@@ -53,9 +53,21 @@
                             <p class="text-blue-700 font-bold text-sm text-center">Manage your listing via the dashboard.</p>
                         </div>
                     {% else %}
-                        <button class="w-full bg-green-500 hover:bg-green-600 text-white py-4 rounded-2xl font-bold text-lg shadow-lg transition-all">
-                            Secure with M-Pesa
-                        </button>
+                        <div id="payment-box" class="space-y-4">
+                            <button onclick="togglePaymentInput()" class="w-full bg-green-500 hover:bg-green-600 text-white py-4 rounded-2xl font-bold text-lg shadow-lg transition-all flex items-center justify-center">
+                                <i class="fas fa-shield-alt mr-2"></i> Secure with M-Pesa
+                            </button>
+
+                            <div id="mpesa-input-area" class="hidden space-y-3 p-4 bg-gray-50 rounded-2xl border border-gray-200">
+                                <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest">M-Pesa Number</label>
+                                <input type="text" id="phone_number" placeholder="2547XXXXXXXX" 
+                                    class="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-500 outline-none font-bold">
+                                <p class="text-[10px] text-gray-500 italic text-center">Booking Fee: KES {{ property.booking_fee }}</p>
+                                <button onclick="initiateStkPush()" id="stk-btn" class="w-full bg-black text-white py-3 rounded-xl font-black hover:bg-gray-800 transition">
+                                    SEND STK PUSH
+                                </button>
+                            </div>
+                        </div>
                         
                         <div class="mt-6 border-t pt-6">
                             <p class="text-xs font-black uppercase text-gray-400 mb-4 tracking-widest">Interested?</p>
@@ -85,4 +97,86 @@
         </div>
     </div>
 </div>
+
+<script>
+    function togglePaymentInput() {
+        const area = document.getElementById('mpesa-input-area');
+        area.classList.toggle('hidden');
+    }
+
+    function initiateStkPush() {
+        const phone = document.getElementById('phone_number').value;
+        const btn = document.getElementById('stk-btn');
+        
+        if (!phone.startsWith('254') || phone.length !== 12) {
+            alert("Please use format 2547XXXXXXXX");
+            return;
+        }
+
+        btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> WAITING FOR PIN...`;
+        btn.disabled = true;
+
+        fetch("{% url 'initiate-payment' property.id %}", {
+            method: "POST",
+            headers: { 
+                "X-CSRFToken": "{{ csrf_token }}",
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: `phone=${phone}`
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'initiated') {
+                // START POLLING
+                checkStatus(data.checkout_id);
+            } else {
+                alert("Error: " + data.message);
+                resetBtn();
+            }
+        })
+        .catch(err => {
+            alert("Connection error. Try again.");
+            resetBtn();
+        });
+    }
+
+    function checkStatus(checkoutId) {
+        const btn = document.getElementById('stk-btn');
+        let attempts = 0;
+        
+        const interval = setInterval(() => {
+            attempts++;
+            // Stop after 60 seconds (20 attempts * 3s)
+            if (attempts > 20) {
+                clearInterval(interval);
+                alert("Payment timed out. If you paid, contact support.");
+                resetBtn();
+            }
+
+            fetch(`/payment/check/${checkoutId}/`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    clearInterval(interval);
+                    btn.innerHTML = `<i class="fas fa-check-circle mr-2"></i> SUCCESS!`;
+                    btn.classList.replace('bg-black', 'bg-green-600');
+                    setTimeout(() => {
+                        window.location.reload(); // Reload to show property is reserved
+                    }, 2000);
+                } else if (data.status === 'failed') {
+                    clearInterval(interval);
+                    alert("Payment was cancelled or failed.");
+                    resetBtn();
+                }
+                // If pending, just keep waiting...
+            });
+        }, 3000);
+    }
+
+    function resetBtn() {
+        const btn = document.getElementById('stk-btn');
+        btn.disabled = false;
+        btn.innerHTML = "SEND STK PUSH";
+    }
+</script>
 {% endblock %}

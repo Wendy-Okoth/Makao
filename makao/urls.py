@@ -18,6 +18,8 @@ from django.contrib import admin
 from django.urls import path
 from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
+
+# 1. Import all property-related views directly
 from properties.views import (
     PropertyListView, 
     PropertyCreateView, 
@@ -30,7 +32,9 @@ from properties.views import (
     InquiryListView,
     send_inquiry,
     PropertyInquiryListView,
-    chat_view
+    chat_view,
+    initiate_payment,      # Import the payment function
+    check_payment_status   # Import the status function
 )
 from accounts.views import signup_view, login_success_redirect
 
@@ -54,4 +58,30 @@ urlpatterns = [
     path('tenant/inquiries/', InquiryListView.as_view(), name='tenant-inquiries'),
     path('chat/<int:inquiry_id>/', chat_view, name='chat-view'),
     path('dashboard/property/<int:property_id>/inquiries/', PropertyInquiryListView.as_view(), name='property-inquiries'),
+    
+    # 2. Use the function names directly (NO 'views.' prefix)
+    path('payment/initiate/<int:property_id>/', initiate_payment, name='initiate-payment'),
+    path('payment/check/<str:checkout_id>/', check_payment_status, name='check-payment'),
+
+    path('admin/', admin.site.urls),
+    path('', TemplateView.as_view(template_name='home.html'), name='home'),
+    path('listings/', PropertyListView.as_view(), name='property-list'),
+    path('dashboard/', LandlordDashboardView.as_view(), name='landlord-dashboard'),
+    path('property/<int:pk>/', PropertyDetailView.as_view(), name='property-detail'),
+    path('property/add/', PropertyCreateView.as_view(), name='property-add'), 
+    path('signup/', signup_view, name='signup'),
+    path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(next_page='/'), name='logout'),
+    path('login-success/', login_success_redirect, name='login-success'),
+    path('about/', TemplateView.as_view(template_name='about.html'), name='about'),
+    path('tenant/dashboard/', TenantDashboardView.as_view(), name='tenant-dashboard'),
+    path('tenant/explore/', TenantExploreView.as_view(), name='tenant-explore'),
+    path('tenant/favorites/', FavoriteListView.as_view(), name='tenant-favorites'), 
+    path('property/<int:property_id>/favorite/', toggle_favorite, name='toggle-favorite'),
+    path('property/<int:property_id>/inquire/', send_inquiry, name='send-inquiry'),
+    path('tenant/inquiries/', InquiryListView.as_view(), name='tenant-inquiries'),
+    path('chat/<int:inquiry_id>/', chat_view, name='chat-view'),
+    path('dashboard/property/<int:property_id>/inquiries/', PropertyInquiryListView.as_view(), name='property-inquiries'),
+    path('payment/initiate/<int:property_id>/',initiate_payment, name='initiate-payment'),
+    path('payment/check/<str:checkout_id>/', check_payment_status, name='check-payment'),
 ]
